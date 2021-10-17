@@ -22,16 +22,12 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 
 import matplotlib.pyplot as plt
-import seaborn as sb
+import seaborn as sns
 
-
-# In[12]:
-
-
-# if the user chooses to upload the data
+#Upload Data
 file = st.file_uploader('Dataset')
 class DL_models:
-
+    
     def __init__(self,X_train,y_train,X_test,y_test):
         self.X_train = X_train
         self.y_train = y_train
@@ -124,7 +120,7 @@ if file is not None:
     st.subheader("Correlation plot of the features")
     corr = dataset.corr()#to find the pairwise correlation of all columns in the dataframe
     fig, ax = plt.subplots()
-    sb.heatmap(corr,cmap="Blues", ax=ax) #Plot rectangular data as a color-encoded matrix.
+    sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
     st.write(fig)
     
     
@@ -160,9 +156,9 @@ if file is not None:
     iso = IsolationForest(contamination='auto')
     train_hat = iso.fit_predict(X_train)
     test_hat = iso.fit_predict(X_test)
-    st.success("Data split successfuly")
-    st.write("No of Training data outliers :",Counter(train_hat)[-1],"out of ",X_train.shape[0],"data points")
-    st.write("No of Testing data outliers :",Counter(test_hat)[-1],"out of ",X_test.shape[0],"data points")
+    st.success("Dataset is split into Training and Testing data ")
+    #st.write("No of Training data outliers :",Counter(train_hat)[-1],"out of ",X_train.shape[0],"data points")
+    #st.write("No of Testing data outliers :",Counter(test_hat)[-1],"out of ",X_test.shape[0],"data points")
     # select all rows that are not outliers
     mask_train = train_hat != -1
     mask_test = test_hat != -1
