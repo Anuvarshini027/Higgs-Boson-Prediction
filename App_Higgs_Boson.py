@@ -164,7 +164,7 @@ class DL_models:
 
 if file is not None:
 
-    dataset = pd.read_csv(file)
+    dataset = pd.read_csv(file,nrows=30000)
     # flag is set to true as data has been successfully read
     flag = "True"
     st.header('**HIGGS BOSON DATA**')
