@@ -71,28 +71,29 @@ class DL_models:
         model.fit(Xtrain, self.y_train, epochs=10, batch_size=32)
         # predicting the opening prices
         y_pred = model.predict(Xtest)
-        y_pred = [0 if prediction[i] <=0.5 else 1 for i in range(len(prediction))]
+        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
         st.write("ACCURACY : ",accuracy_score(self.y_test, predictions)*100,"%")
         plt.plot(self.y_test, y_pred)
         st.write(plt.show())
         st.write("CONFUSION MATRIX : ")
-        st.write(confusion_matrix(self.y_test, predictions))
+        st.write(confusion_matrix(self.y_test, y_pred))
         st.write("CLASSIFICATION REPORT : ")
-        st.write(classification_report(self.y_test, predictions, target_names = ["b","s"], output_dict=True))
+        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
         
     def dl_LSTM(self):
         st.subheader("LSTM(Long Short Term Memory)")
-        X_train = self.X_train.reshape(self.X_train.shape+(1,))
-        X_test = self.X_test.reshape(self.X_test.shape+(1,))
+        Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
+        # Reshape the data
+        Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
         
         model = Sequential()
-        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (X_train.shape[1], 1), activation = 'tanh'))
+        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (Xtrain.shape[1], 1), activation = 'tanh'))
         model.add(LSTM(units = 50, activation = 'tanh'))
         model.add(Dense(units = 2,activation='softmax'))
         model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
-        model.fit(X_train,self.y_train, batch_size = 32, epochs = 2)
+        model.fit(Xtrain,self.y_train, batch_size = 32, epochs = 2)
         
-        y_pred = model.predict(X_test)
+        y_pred = model.predict(Xtest)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
         
         st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
@@ -108,9 +109,9 @@ class DL_models:
         
     def gru_lstm(self):
         st.subheader("Hybrid Model")
-        trainx = self.X_train.reshape(self.X_train.shape+(1,))
-        testx = self.X_test.reshape(self.X_test.shape+(1,))
-        
+        trainx = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
+        testx =  np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
+       
         model = Sequential()
         model.add(Conv1D(filters=32, kernel_size=9, padding='same', activation='relu'))
         model.add(MaxPooling1D(pool_size=2))
@@ -149,12 +150,16 @@ if file is not None:
     dataset.index=dataset.EventId
     dataset=dataset.drop(columns=['EventId'])
 
-    st.write("DATA PRE-PROCESSING")
-    st.subheader("Correlation plot of the features")
-    corr = dataset.corr()#to find the pairwise correlation of all columns in the dataframe
-    fig, ax = plt.subplots()
-    sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
-    st.write(fig)
+    st.subheader("DATA PRE-PROCESSING")
+    st.write("Number of features",dataset.shape[1])
+    st.subheader("Features List")
+    st.write(dataset.columns)
+    st.write("Label is the column to be predicted")
+    #st.subheader("Correlation plot of the features")
+    #corr = dataset.corr()#to find the pairwise correlation of all columns in the dataframe
+    #fig, ax = plt.subplots()
+    #sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
+    #st.write(fig)
     
     
     st.subheader("Labels distribution")
@@ -188,14 +193,14 @@ if file is not None:
     # Splitting the data into 20% test and 80% training data
     # Outlier detection and removal using Isolation Forest
     iso = IsolationForest(contamination='auto')
-    train_hat = iso.fit_predict(X_train)
-    test_hat = iso.fit_predict(X_test)
+    train_iso = iso.fit_predict(X_train)
+    test_iso = iso.fit_predict(X_test)
     st.success("Dataset is split into Training and Testing data ")
-    st.write("After removing training data outliers :",Counter(train_hat)[-1],"outliers out of ",X_train.shape[0],"data points")
-    st.write("After removing testing data outliers:",Counter(test_hat)[-1],"outliers out of ",X_test.shape[0],"data points")
+    st.write(Counter(train_hat)[-1],"outliers out of ",X_train.shape[0],"data points are removed which makes it easier for prediction")
+    st.write(Counter(test_hat)[-1],"outliers out of ",X_test.shape[0],"data points are removed which makes it easier for prediction")
     # select all rows that are not outliers
-    mask_train = train_hat != -1
-    mask_test = test_hat != -1
+    mask_train = train_iso != -1 #-1 refers to outliers while 1 refers to Inliers
+    mask_test = test_iso != -1
     X_train, y_train = X_train[mask_train, :], y_train[mask_train]
     X_test, y_test = X_test[mask_test, :], y_test[mask_test]
     st.success("Outliers removed successfully!")
