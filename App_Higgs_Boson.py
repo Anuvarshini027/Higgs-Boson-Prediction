@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
 
 import numpy as np
 from keras.utils import np_utils
@@ -57,6 +52,9 @@ class DL_models:
         y_pred = model.predict(self.X_test)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
         st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred))
+        fig=plt.plot(self.y_test, y_pred)
+        st.write(fig)
+        
         st.write("CONFUSION MATRIX : ") 
         st.write(confusion_matrix(self.y_test, y_pred))
         st.write("CLASSIFICATION REPORT : ")
@@ -78,6 +76,8 @@ class DL_models:
         prediction = model.predict(Xtest)
         predictions = [0 if prediction[i] <=0.5 else 1 for i in range(len(prediction))]
         st.write("ACCURACY : ",accuracy_score(self.y_test, predictions))
+        fig=plt.plot(self.y_test, y_pred)
+        st.write(fig)
         st.write("CONFUSION MATRIX : ")
         st.write(confusion_matrix(self.y_test, predictions))
         st.write("CLASSIFICATION REPORT : ")
@@ -196,14 +196,13 @@ if file is not None:
             
 
     if(st.button("FINISH")):
-        st.info("YAY! WE ARE DONE TRAINING AND TESTING THE MODELS! HOPE WE MEET AGAIN SOON")
+        st.info("THANK YOU FOR YOUR PATIENCE. WE ARE DONE. HOPE YOU ARE SATISFIED")
         st.balloons()
 
 else:
     st.warning("No file has been chosen yet")
 
 
-# In[ ]:
 
 
 
