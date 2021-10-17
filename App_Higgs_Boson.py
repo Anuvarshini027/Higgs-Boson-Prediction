@@ -175,7 +175,8 @@ if file is not None:
     y = dataset.iloc[:,-1] # extracting the labels
     train_label = y.tolist()
     class_names = list(set(train_label))
-    y=np_utils.to_categorical(y)
+    le = LabelEncoder()  
+	y = le.fit_transform(y) # Encoding categorical data to numeric data
     
     st.success("Data cleaned!")
     st.subheader('Test size split of users choice:')
