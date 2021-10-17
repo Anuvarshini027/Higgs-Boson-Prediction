@@ -171,7 +171,7 @@ if file is not None:
     st.subheader("Statistical information about the datset")
     st.write(dataset.describe())
     
-    data = dataset.iloc[:,:-1] # Extracting features
+    data = dataset.iloc[:,:-2] # Extracting features #exclusing the label and the weight column
     imp_mean = SimpleImputer(missing_values = -999.0, strategy='mean') 
     # the placeholder for the missing values. All occurrences of missing_values will be imputed.
     #If “mean”, then replace missing values using the mean along each column. Can only be used with numeric data.
@@ -196,8 +196,8 @@ if file is not None:
     train_iso = iso.fit_predict(X_train)
     test_iso = iso.fit_predict(X_test)
     st.success("Dataset is split into Training and Testing data ")
-    st.write(Counter(train_hat)[-1],"outliers out of ",X_train.shape[0],"data points are removed which makes it easier for prediction")
-    st.write(Counter(test_hat)[-1],"outliers out of ",X_test.shape[0],"data points are removed which makes it easier for prediction")
+    st.write(Counter(train_iso)[-1],"outliers out of ",X_train.shape[0],"data points are removed which makes it easier for prediction")
+    st.write(Counter(test_iso)[-1],"outliers out of ",X_test.shape[0],"data points are removed which makes it easier for prediction")
     # select all rows that are not outliers
     mask_train = train_iso != -1 #-1 refers to outliers while 1 refers to Inliers
     mask_test = test_iso != -1
