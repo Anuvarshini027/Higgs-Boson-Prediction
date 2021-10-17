@@ -48,9 +48,9 @@ class DL_models:
         model.fit(self.X_train,self.y_train, batch_size = 32, epochs = 10)
         y_pred = model.predict(self.X_test)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred))
-        fig=plt.plot(self.y_test, y_pred)
-        st.write(fig)
+        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
+        plt.plot(self.y_test, y_pred)
+        st.write(plt.show())
         
         st.write("CONFUSION MATRIX : ") 
         st.write(confusion_matrix(self.y_test, y_pred))
@@ -70,11 +70,11 @@ class DL_models:
         model.compile(loss='mean_squared_error', optimizer='adam',metrics = ["acc"])
         model.fit(Xtrain, self.y_train, epochs=10, batch_size=32)
         # predicting the opening prices
-        prediction = model.predict(Xtest)
-        predictions = [0 if prediction[i] <=0.5 else 1 for i in range(len(prediction))]
-        st.write("ACCURACY : ",accuracy_score(self.y_test, predictions))
-        fig=plt.plot(self.y_test, y_pred)
-        st.write(fig)
+        y_pred = model.predict(Xtest)
+        y_pred = [0 if prediction[i] <=0.5 else 1 for i in range(len(prediction))]
+        st.write("ACCURACY : ",accuracy_score(self.y_test, predictions)*100,"%")
+        plt.plot(self.y_test, y_pred)
+        st.write(plt.show())
         st.write("CONFUSION MATRIX : ")
         st.write(confusion_matrix(self.y_test, predictions))
         st.write("CLASSIFICATION REPORT : ")
@@ -86,7 +86,7 @@ class DL_models:
         X_test = self.X_test.reshape(self.X_test.shape+(1,))
         
         model = Sequential()
-        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (self.X_train.shape[1], 1), activation = 'tanh'))
+        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (X_train.shape[1], 1), activation = 'tanh'))
         model.add(LSTM(units = 50, activation = 'tanh'))
         model.add(Dense(units = 2,activation='softmax'))
         model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
@@ -95,9 +95,9 @@ class DL_models:
         y_pred = model.predict(X_test)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
         
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred))
-        fig=plt.plot(self.y_test, y_pred)
-        st.write(fig)
+        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
+        plt.plot(self.y_test, y_pred)
+        st.write(plt.show())
         
         st.write("CONFUSION MATRIX : ") 
         st.write(confusion_matrix(self.y_test, y_pred))
@@ -126,9 +126,9 @@ class DL_models:
         y_pred = model.predict(testx)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
         
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred))
-        fig=plt.plot(self.y_test, y_pred)
-        st.write(fig)
+        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
+        plt.plot(self.y_test, y_pred)
+        st.write(plt.show())
         
         st.write("CONFUSION MATRIX : ") 
         st.write(confusion_matrix(self.y_test, y_pred))
@@ -160,8 +160,8 @@ if file is not None:
     st.subheader("Labels distribution")
     st.bar_chart(dataset["Label"].value_counts())
     
-    st.subheader("Finding no. of null values per column in the dataset")
-    st.write(Counter(dataset.isna()))
+    #st.subheader("Finding no. of null values per column in the dataset")
+    #st.write(Counter(dataset.isna()))
     
     st.subheader("Statistical information about the datset")
     st.write(dataset.describe())
