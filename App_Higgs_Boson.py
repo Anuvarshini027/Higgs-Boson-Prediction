@@ -16,6 +16,7 @@ from collections import Counter
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM,Dropout,SimpleRNN
+from tensorflow.keras.layers import Conv1D,MaxPooling1D,BatchNormalization
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
@@ -104,6 +105,38 @@ class DL_models:
         st.write("CLASSIFICATION REPORT : ")
         st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
         
+        
+    def gru_lstm(self):
+        st.subheader("Hybrid Model")
+        trainx = self.X_train.reshape(self.X_train.shape+(1,))
+        testx = self.X_test.reshape(self.X_test.shape+(1,))
+        
+        model = Sequential()
+        model.add(Conv1D(filters=32, kernel_size=9, padding='same', activation='relu'))
+        model.add(MaxPooling1D(pool_size=2))
+        model.add(Conv1D(filters=16, kernel_size=9, padding='same', activation='relu'))
+        model.add(MaxPooling1D(pool_size=2))
+        model.add(LSTM(16, dropout=0.2, recurrent_dropout=0.2,return_sequences=True))
+        model.add(LSTM(8, dropout=0.2, recurrent_dropout=0.2))
+        model.add(Dense(2, activation='softmax'))
+
+        model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+        model.fit(trainx,self.y_train,epochs=10,validation_data=(testx, self.y_test),verbose=1)
+        
+        y_pred = model.predict(testx)
+        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
+        
+        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred))
+        fig=plt.plot(self.y_test, y_pred)
+        st.write(fig)
+        
+        st.write("CONFUSION MATRIX : ") 
+        st.write(confusion_matrix(self.y_test, y_pred))
+        
+        st.write("CLASSIFICATION REPORT : ")
+        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
+        
+        
 
 if file is not None:
 
@@ -171,7 +204,7 @@ if file is not None:
 
     dl = DL_models(X_train,y_train,X_test,y_test)
     st.subheader('Choose the Deep Learning model :')
-    mopt = st.multiselect("Select :",["Simple ANN","RNN","LSTM","All"])
+    mopt = st.multiselect("Select :",["Simple ANN","RNN","LSTM","GRU_LSTM","All"])
     # "Click to select",
     if(st.button("START TRAINING AND TESTING THE MODEL(S) SELECTED")):
 
@@ -189,6 +222,7 @@ if file is not None:
             dl.basic_ANN()
             dl.RNN()
             dl.dl_LSTM()
+            dl.gru_lstm()
             
 
     if(st.button("FINISH")):
