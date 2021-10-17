@@ -176,7 +176,7 @@ if file is not None:
     train_label = y.tolist()
     class_names = list(set(train_label))
     le = LabelEncoder()  
-	y = le.fit_transform(y) # Encoding categorical data to numeric data
+    y = le.fit_transform(y) # Encoding categorical data to numeric data
     
     st.success("Data cleaned!")
     st.subheader('Test size split of users choice:')
@@ -191,8 +191,8 @@ if file is not None:
     train_hat = iso.fit_predict(X_train)
     test_hat = iso.fit_predict(X_test)
     st.success("Dataset is split into Training and Testing data ")
-    #st.write("No of Training data outliers :",Counter(train_hat)[-1],"out of ",X_train.shape[0],"data points")
-    #st.write("No of Testing data outliers :",Counter(test_hat)[-1],"out of ",X_test.shape[0],"data points")
+    st.write("After removing training data outliers :",Counter(train_hat)[-1],"outliers out of ",X_train.shape[0],"data points")
+    st.write("After removing testing data outliers:",Counter(test_hat)[-1],"outliers out of ",X_test.shape[0],"data points")
     # select all rows that are not outliers
     mask_train = train_hat != -1
     mask_test = test_hat != -1
