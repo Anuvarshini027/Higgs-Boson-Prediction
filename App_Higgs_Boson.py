@@ -84,7 +84,7 @@ class DL_models:
         st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
         
     def SVM(self):
-        st.subheader("LSTM(Long Short Term Memory)")
+        st.subheader("Support Vector Machine")
         st.spinner(text='In progress...')
         model=svm.SVC(kernel='linear')
         model.fit(self.X_train, self.y_train)
@@ -215,7 +215,7 @@ if file is not None:
     st.write("Data is being split into testing and training data!")
     # Splitting the data into 20% test and 80% training data
     # Outlier detection and removal using Isolation Forest
-    iso = IsolationForest(contamination='auto')
+    """iso = IsolationForest(contamination='auto')
     train_iso = iso.fit_predict(X_train)
     test_iso = iso.fit_predict(X_test)
     st.success("Dataset is split into Training and Testing data ")
@@ -229,7 +229,7 @@ if file is not None:
     st.success("Outliers removed successfully!")
     std_sc = StandardScaler()
     X_train = std_sc.fit_transform(X_train) # Scaling the training data
-    X_test = std_sc.transform(X_test) # Scaling the testing data
+    X_test = std_sc.transform(X_test) # Scaling the testing data"""
 
     dl = DL_models(X_train,y_train,X_test,y_test)
     st.subheader('Choose the Deep Learning model :')
