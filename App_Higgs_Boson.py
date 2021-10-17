@@ -38,7 +38,7 @@ class DL_models:
 
     def simple_ANN(self):
         st.subheader("SIMPLE ARTIFICIAL NEURAL NETWORK")
-        st.write("Please wait till the model loads...")
+        st.spinner(text='In progress...')
         model = Sequential()
         model.add(Dense(units = 128, activation = 'relu'))
         model.add(Dropout(0.2))
@@ -62,7 +62,7 @@ class DL_models:
 
     def RNN(self):
         st.subheader("RECURRENT NEURAL NETWORK")
-        st.write("Please wait till the model loads...")
+        st.spinner(text='In progress...')
         Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
         # Reshape the data
         Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
@@ -84,7 +84,7 @@ class DL_models:
         
     def dl_LSTM(self):
         st.subheader("LSTM(Long Short Term Memory)")
-        st.write("Please wait till the model loads...")
+        st.spinner(text='In progress...')
         Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
         # Reshape the data
         Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
@@ -94,7 +94,7 @@ class DL_models:
         model.add(LSTM(units = 50, activation = 'tanh'))
         model.add(Dense(units = 2,activation='softmax'))
         model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
-        model.fit(Xtrain,self.y_train, batch_size = 32, epochs = 2)
+        model.fit(Xtrain,self.y_train, batch_size = 32, epochs = 2,verbose=1)
         
         y_pred = model.predict(Xtest)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
@@ -112,7 +112,7 @@ class DL_models:
         
     def gru_lstm(self):
         st.subheader("Hybrid Model")
-        st.write("Please wait till the model loads...")
+        st.spinner(text='In progress...')
         trainx = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
         testx =  np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
        
@@ -145,7 +145,7 @@ class DL_models:
 
 if file is not None:
 
-    dataset = pd.read_csv(file,nrows=30000)
+    dataset = pd.read_csv(file)
     # flag is set to true as data has been successfully read
     flag = "True"
     st.header('**HIGGS BOSON DATA**')
