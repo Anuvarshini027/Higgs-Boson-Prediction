@@ -6,3 +6,4 @@ numpy
 gunicorn
 matplotlib
 streamlit
+seaborn
