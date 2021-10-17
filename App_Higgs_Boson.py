@@ -161,7 +161,7 @@ if file is not None:
     st.bar_chart(dataset["Label"].value_counts())
     
     st.subheader("Finding no. of null values per column in the dataset")
-    st.write(dataset.isna().sum())
+    st.write(Counter(dataset.isna()))
     
     st.subheader("Statistical information about the datset")
     st.write(dataset.describe())
@@ -172,7 +172,7 @@ if file is not None:
     #If “mean”, then replace missing values using the mean along each column. Can only be used with numeric data.
     
     X = imp_mean.fit_transform(data)
-    y = dataset.iloc[:,-1].values # extracting the labels
+    y = dataset.iloc[:,-1] # extracting the labels
     train_label = y.tolist()
     class_names = list(set(train_label))
     y=np_utils.to_categorical(y)
