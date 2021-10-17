@@ -17,6 +17,7 @@ from collections import Counter
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM,Dropout,SimpleRNN
 from tensorflow.keras.layers import Conv1D,MaxPooling1D,BatchNormalization
+from sklearn import svm
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
@@ -82,6 +83,24 @@ class DL_models:
         st.write("CLASSIFICATION REPORT : ")
         st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
         
+    def SVM(self):
+        st.subheader("LSTM(Long Short Term Memory)")
+        st.spinner(text='In progress...')
+        model=svm.SVC(kernel='linear')
+        model.fit(self.X_train, self.y_train)
+        
+        y_pred = model.predict(self.X_test)
+        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
+        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
+        plt.plot(self.y_test, y_pred)
+        st.write(plt.show())
+        
+        st.write("CONFUSION MATRIX : ") 
+        st.write(confusion_matrix(self.y_test, y_pred))
+        st.write("CLASSIFICATION REPORT : ")
+        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
+        
+        
     def dl_LSTM(self):
         st.subheader("LSTM(Long Short Term Memory)")
         st.spinner(text='In progress...')
@@ -101,7 +120,7 @@ class DL_models:
         
         st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
         plt.plot(self.y_test, y_pred)
-        st.write(plt.show())
+        plt.show()
         
         st.write("CONFUSION MATRIX : ") 
         st.write(confusion_matrix(self.y_test, y_pred))
@@ -175,7 +194,7 @@ if file is not None:
     st.subheader("Statistical information about the datset")
     st.write(dataset.describe())
     
-    data = dataset.iloc[:,:-2] # Extracting features #exclusing the label and the weight column
+    data = dataset.iloc[:,:-1] # Extracting features #exclusing the label and the weight column
     imp_mean = SimpleImputer(missing_values = -999.0, strategy='mean') 
     # the placeholder for the missing values. All occurrences of missing_values will be imputed.
     #If “mean”, then replace missing values using the mean along each column. Can only be used with numeric data.
@@ -214,7 +233,7 @@ if file is not None:
 
     dl = DL_models(X_train,y_train,X_test,y_test)
     st.subheader('Choose the Deep Learning model :')
-    options = st.multiselect("Select :",["Simple ANN","RNN","LSTM","GRU_LSTM","All"])
+    options = st.multiselect("Select :",["Simple ANN","RNN","SVM","LSTM","GRU_LSTM","All"])
     # "Click to select",
     if(st.button("START")):
 
@@ -223,6 +242,9 @@ if file is not None:
             
         if "RNN" in  options:
             dl.RNN()
+            
+        if "SVM" in  options:
+            dl.SVM()
             
         if "LSTM" in  options:
             dl.dl_LSTM()
@@ -235,6 +257,7 @@ if file is not None:
 
             dl.basic_ANN()
             dl.RNN()
+            dl.SVM()
             dl.dl_LSTM()
             dl.gru_lstm()
             
