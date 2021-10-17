@@ -38,6 +38,7 @@ class DL_models:
 
     def simple_ANN(self):
         st.subheader("SIMPLE ARTIFICIAL NEURAL NETWORK")
+        st.write("Please wait till the model loads...")
         model = Sequential()
         model.add(Dense(units = 128, activation = 'relu'))
         model.add(Dropout(0.2))
@@ -61,6 +62,7 @@ class DL_models:
 
     def RNN(self):
         st.subheader("RECURRENT NEURAL NETWORK")
+        st.write("Please wait till the model loads...")
         Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
         # Reshape the data
         Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
@@ -72,7 +74,7 @@ class DL_models:
         # predicting the opening prices
         y_pred = model.predict(Xtest)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
-        st.write("ACCURACY : ",accuracy_score(self.y_test, predictions)*100,"%")
+        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
         plt.plot(self.y_test, y_pred)
         st.write(plt.show())
         st.write("CONFUSION MATRIX : ")
@@ -82,6 +84,7 @@ class DL_models:
         
     def dl_LSTM(self):
         st.subheader("LSTM(Long Short Term Memory)")
+        st.write("Please wait till the model loads...")
         Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
         # Reshape the data
         Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
@@ -109,6 +112,7 @@ class DL_models:
         
     def gru_lstm(self):
         st.subheader("Hybrid Model")
+        st.write("Please wait till the model loads...")
         trainx = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
         testx =  np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
        
@@ -210,20 +214,24 @@ if file is not None:
 
     dl = DL_models(X_train,y_train,X_test,y_test)
     st.subheader('Choose the Deep Learning model :')
-    mopt = st.multiselect("Select :",["Simple ANN","RNN","LSTM","GRU_LSTM","All"])
+    options = st.multiselect("Select :",["Simple ANN","RNN","LSTM","GRU_LSTM","All"])
     # "Click to select",
-    if(st.button("START TRAINING AND TESTING THE MODEL(S) SELECTED")):
+    if(st.button("START")):
 
-        if "Basic ANN" in mopt:
+        if "Simple ANN" in  options:
             dl.simple_ANN()
             
-        if "RNN" in mopt:
+        if "RNN" in  options:
             dl.RNN()
             
-        if "LSTM" in mopt:
+        if "LSTM" in  options:
             dl.dl_LSTM()
+        
+        if "GRU_LSTM" in options:
+            dl.gru_lstm()
+        
 
-        if "All" in mopt:
+        if "All" in  options:
 
             dl.basic_ANN()
             dl.RNN()
