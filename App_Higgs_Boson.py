@@ -90,7 +90,7 @@ class DL_models:
         model.add(LSTM(units = 50, activation = 'tanh'))
         model.add(Dense(units = 2,activation='softmax'))
         model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
-        model.fit(X_train,self.y_train, batch_size = 32, epochs = 10)
+        model.fit(X_train,self.y_train, batch_size = 32, epochs = 2)
         
         y_pred = model.predict(X_test)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
@@ -121,7 +121,7 @@ class DL_models:
         model.add(Dense(2, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-        model.fit(trainx,self.y_train,epochs=10,validation_data=(testx, self.y_test),verbose=1)
+        model.fit(trainx,self.y_train,epochs=2,validation_data=(testx, self.y_test),verbose=1)
         
         y_pred = model.predict(testx)
         y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
@@ -140,7 +140,7 @@ class DL_models:
 
 if file is not None:
 
-    dataset = pd.read_csv(file)
+    dataset = pd.read_csv(file,nrows=30000)
     # flag is set to true as data has been successfully read
     flag = "True"
     st.header('**HIGGS BOSON DATA**')
