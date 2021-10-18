@@ -166,44 +166,15 @@ if file is not None:
     yt = dataset.iloc[:,-1] # extracting the label 
     Xt=np.asarray(Xt1)
     Y=pd.get_dummies(yt) #one hot encoding
-    Y=np.asarray(Y)
+    y=np.asarray(Y)
     
-    #Feature selection
-    st.subheader("Feature selection")
-    
-    st.subheader('Number of features to be selected as per user(s) choice:)')
-    st.text('Default is set to 15')
-    f = st.number_input('',step = 5,min_value=10, value = 15)
-    
-    m = LogisticRegression()
-    rfe = RFE(m,f) #extracts 15 best features from the dataset
-    fit = rfe.fit(Xt,yt)
-    ans=fit.support_
-    index=[]
-    for i in range(len(ans)):
-        if ans[i] == True:
-            index.append(i)
-    
-    a=[Xt1.iloc[:,i] for i in index]
-    a=pd.DataFrame(a)
-    a=a.T
-    st.subheader("After extracting the features")
-    st.write(a.head())
-    st.write(a.columns)
-    st.write(a.shape)
-    
-    st.subheader("Correlation plot of the features")
-    corr = a.corr()#to find the pairwise correlation of all columns in the dataframe
-    fig, ax = plt.subplots()
-    sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
-    st.write(fig)
-    
-    st.success("Data cleaned!")
+   
     st.subheader('Test size split of users choice:)')
     st.text('Default is set to 20%')
     
+    
     k = st.number_input('',step = 5,min_value=10, value = 20)
-    trainx,testx,trainy,testy = train_test_split(X, y, test_size = k * 0.01, random_state = 0)
+    trainx,testx,trainy,testy = train_test_split(Xt, y, test_size = k * 0.01, random_state = 0)
     st.write("Data is being split into testing and training data!")
     # Splitting the data into 20% test and 80% training data   
     st.write("Train data size:",trainx.shape)
