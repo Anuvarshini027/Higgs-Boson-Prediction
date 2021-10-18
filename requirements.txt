@@ -1,4 +1,5 @@
 tensorflow-cpu 
+PIL
 sklearn
 urllib3
 pandas
