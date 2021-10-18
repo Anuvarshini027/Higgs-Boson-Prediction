@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import set_printoptions
 from keras.utils import np_utils
 import pandas as pd
 import streamlit as st
@@ -12,6 +13,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import IsolationForest
 from collections import Counter
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM,Dropout,SimpleRNN
@@ -23,6 +26,7 @@ from sklearn.metrics import classification_report
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import tensorflow
 
 
 from sklearn.feature_selection import RFE
@@ -48,14 +52,10 @@ class Models:
             model.add(Dense(2, activation='sigmoid'))
             opt = tensorflow.keras.optimizers.Adam(learning_rate=0.01)
             model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
-        
-            st.subheader('Number of epochs as per user(s) choice:)')
-            st.text('Default is set to 50')
-            f = st.number_input('',step = 10,min_value=50, value = 50)
-            model.fit(self.trainx,self.trainy,validation_data =(self.testx,self.testy), epochs=f)
+       
+            model.fit(self.trainx,self.trainy,validation_data =(self.testx,self.testy), epochs=80)
             st.success("Done!")
-        st.subheader("Summary of the Model")
-        st.write(model.summary())
+        
         # evaluate the model
         scores = model.evaluate(self.trainx, self.trainy, verbose=0)
         st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
@@ -72,13 +72,8 @@ class Models:
         model.add(Dense(2))
         model.compile(loss='mean_squared_error', optimizer='adam',metrics = ["accuracy"])
         
-        st.subheader('Number of epochs as per user(s) choice:)')
-        st.text('Default is set to 10')
-        f = st.number_input('',step = 1,min_value=10, value = 10)
-        model.fit(trainx_dl, self.trainy, epochs=f,validation_data=(testx_dl,self.testy),verbose=1)
+        model.fit(trainx_dl, self.trainy, epochs=10,validation_data=(testx_dl,self.testy),verbose=1)
         
-        st.subheader("Summary of the Model")
-        st.write(model.summary())
         # evaluate the model
         scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
         st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
@@ -95,14 +90,9 @@ class Models:
         model.add(Dense(units = 2,activation='softmax'))
         model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
         
-        st.subheader('Number of epochs as per user(s) choice:)')
-        st.text('Default is set to 10')
-        f = st.number_input('',step = 1,min_value=10, value = 10)
-        model.fit(trainx_dl,self.trainy,epochs=f,validation_data=(testx_dl,self.testy),verbose=1)
+        model.fit(trainx_dl,self.trainy,epochs=3,validation_data=(testx_dl,self.testy),verbose=1)
         st.write(model.summary())
-        
-        st.subheader("Summary of the Model")
-        st.write(model.summary())
+       
         # evaluate the model
         scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
         st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
@@ -122,15 +112,10 @@ class Models:
         model.add(LSTM(8, dropout=0.2, recurrent_dropout=0.2))
         model.add(Dense(2, activation='softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-        
-        st.subheader('Number of epochs as per user(s) choice:)')
-        st.text('Default is set to 10')
-        f = st.number_input('',step = 1,min_value=10, value = 10)
-        model.fit(trainx_dl,self.trainy,epochs=f,validation_data=(testx_dl, self.testy),verbose=1)
+       
+        model.fit(trainx_dl,self.trainy,epochs=10,validation_data=(testx_dl, self.testy),verbose=1)
         st.write(model.summary())
         
-        st.subheader("Summary of the Model")
-        st.write(model.summary())
         # evaluate the model
         scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
         st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
@@ -162,19 +147,56 @@ if file is not None:
     st.subheader("Excluding the feature weight")
     
     Xt1 = dataset.iloc[:,:-2] 
+    Xt1[Xt1<0]=0
     st.write(Xt1.head())
     yt = dataset.iloc[:,-1] # extracting the label 
     Xt=np.asarray(Xt1)
     Y=pd.get_dummies(yt) #one hot encoding
     y=np.asarray(Y)
     
+    st.subheader("Feature selection")
+    
+    st.subheader('Number of features to be selected as per user(s) choice:)')
+    st.text('Default is set to 15')
+    f = st.number_input('',step = 5,min_value=10, value = 15)
+    
+    bestfeature= SelectKBest(score_func=chi2,k=10)
+    fit=(bestfeature.fit(Xt,yt))
+    dfscores=pd.DataFrame(fit.scores_)
+    dfcolumns=pd.DataFrame(df.columns)
+    featureScores=pd.concat([dfcolumns,dfscores],axis=1)
+    featureScores.columns=['Column Names','Score']
+    st.write(featureScores)
+    
+    #1. using SelectKBest selecting top 10 feature
+    b=featureScores.nlargest(15,'Score')
+    st.write("Top 15 Selected Features")
+    st.write(b)
+    index=(b.index).tolist()
+    
+    a=[Xt1.iloc[:,i] for i in index]
+    a=pd.DataFrame(a)
+    a=a.T
+    X=np.asarray(a)
+    st.subheader("After extracting the features")
+    st.write(a.head())
+    st.write(a.columns)
+    st.write(a.shape)
+    
+    st.subheader("Correlation plot of the features")
+    corr = a.corr()#to find the pairwise correlation of all columns in the dataframe
+    fig, ax = plt.subplots()
+    sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
+    st.write(fig)
+    
+    st.success("Data cleaned!")
    
     st.subheader('Test size split of users choice:)')
     st.text('Default is set to 20%')
     
     
     k = st.number_input('',step = 5,min_value=10, value = 20)
-    trainx,testx,trainy,testy = train_test_split(Xt, y, test_size = k * 0.01, random_state = 0)
+    trainx,testx,trainy,testy = train_test_split(X, y, test_size = k * 0.01, random_state = 0)
     st.write("Data is being split into testing and training data!")
     # Splitting the data into 20% test and 80% training data   
     st.write("Train data size:",trainx.shape)
