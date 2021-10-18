@@ -170,10 +170,12 @@ if file is not None:
     
     #Feature selection
     st.subheader("Feature selection")
-    m = LogisticRegression()
+  
     st.subheader('Number of features to be selected as per user(s) choice:)')
     st.text('Default is set to 15')
     f = st.number_input('',step = 5,min_value=10, value = 15)
+    
+    m = LogisticRegression()
     rfe = RFE(m, f) #extracts 15 best features from the dataset
     fit = rfe.fit(Xt, yt)
     ans=fit.support_
