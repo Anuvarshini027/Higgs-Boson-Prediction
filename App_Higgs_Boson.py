@@ -3,7 +3,6 @@ from numpy import set_printoptions
 from keras.utils import np_utils
 import pandas as pd
 import streamlit as st
-from PIL import Image
 import warnings
 warnings.filterwarnings("ignore") 
 
@@ -242,8 +241,7 @@ if file is not None:
 
     if(st.button("FINISH")):
         st.info("Thank You for your Patience!")
-        image = Image.open('https://www.wishesmsg.com/wp-content/uploads/Have-a-Great-Day-Messages.jpg',width=None)
-        st.image(image,use_column_width=True)
+        st.balloons()
 
 else:
     st.warning("No file has been chosen yet")
