@@ -163,14 +163,14 @@ if file is not None:
     bestfeature= SelectKBest(score_func=chi2,k=10)
     fit=(bestfeature.fit(Xt,yt))
     dfscores=pd.DataFrame(fit.scores_)
-    dfcolumns=pd.DataFrame(df.columns)
+    dfcolumns=pd.DataFrame(dataset.columns)
     featureScores=pd.concat([dfcolumns,dfscores],axis=1)
     featureScores.columns=['Column Names','Score']
     st.write(featureScores)
     
-    #1. using SelectKBest selecting top 10 feature
+    #1. using SelectKBest selecting top 15 features
     b=featureScores.nlargest(15,'Score')
-    st.write("Top 15 Selected Features")
+    st.write("Top 15 Selected Features based on their scores")
     st.write(b)
     index=(b.index).tolist()
     
