@@ -23,12 +23,13 @@ streamlit run higgs_boson_DL.py
 ```
 ## Step-by-Step Approach:
 
-Data Analysis<br>
-Data Cleaning<br>
-Data Pre-Processing<br>
-   =>Feature Selection (Using Univariate Feature Selection Method)<br>
-Data Splitting(training and testing data)<br>
-Performing data on various DEEP LEARNING Models<br>
+ -Data Analysis<br>
+ -Data Cleaning<br>
+ -Data Pre-Processing<br>
+ -Feature Selection (Using Univariate Feature Selection Method)<br>
+ -Data Splitting(training and testing data)<br>
+ -Performing data on various DEEP LEARNING Models<br>
+ -Evaluating Models
 
 ## DEEP LEARNING MODELS USED IN THIS PROJECT:
 
