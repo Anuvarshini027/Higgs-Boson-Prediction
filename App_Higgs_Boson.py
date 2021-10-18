@@ -170,13 +170,9 @@ if file is not None:
     
     #Feature selection
     st.subheader("Feature selection")
-  
-    st.subheader('Number of features to be selected as per user(s) choice:)')
-    st.text('Default is set to 15')
-    f = st.number_input('',step = 5,min_value=10, value = 15)
     
     m = LogisticRegression()
-    rfe = RFE(m, f) #extracts 15 best features from the dataset
+    rfe = RFE(m, 15) #extracts 15 best features from the dataset
     fit = rfe.fit(Xt, yt)
     ans=fit.support_
     index=[]
@@ -206,7 +202,9 @@ if file is not None:
     trainx,testx,trainy,testy = train_test_split(X, y, test_size = k * 0.01, random_state = 0)
     st.write("Data is being split into testing and training data!")
     # Splitting the data into 20% test and 80% training data   
-
+    st.write("Train data size:",trainx.shape)
+    st.write("Test data size:",testx.shape)
+    
     algo = Models(trainx,trainy,testx,testy)
     st.subheader('Choose the Deep Learning model :')
     options = st.multiselect("Select :",["Simple ANN","RNN","LSTM","GRU_LSTM(HYBRID)","All"])
