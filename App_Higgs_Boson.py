@@ -225,13 +225,16 @@ if file is not None:
             algo.RNN()
             
         if "LSTM" in options:
-            algo.dl_LSTM()
-
+            algo.LSTM()
+        
+        if "GRU_LSTM(HYBRID)" in options:
+            algo.gru_lstm()
+            
         if "All" in options:
 
             algo.basic_ANN()
             algo.RNN()
-            algo.dl_LSTM()
+            algo.LSTM()
             algo.gru_lstm()
             
 
