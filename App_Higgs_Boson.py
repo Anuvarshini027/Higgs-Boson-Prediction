@@ -176,7 +176,7 @@ if file is not None:
     f = st.number_input('',step = 5,min_value=10, value = 15)
     
     m = LogisticRegression()
-    rfe = RFE(self,m,f) #extracts 15 best features from the dataset
+    rfe = RFE(m,f) #extracts 15 best features from the dataset
     fit = rfe.fit(Xt,yt)
     ans=fit.support_
     index=[]
