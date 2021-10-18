@@ -148,14 +148,7 @@ if file is not None:
     dataset.index=dataset.EventId
     dataset=dataset.drop(columns=['EventId'])
 
-    st.write("DATA PRE-PROCESSING")
-    st.subheader("Correlation plot of the features")
-    corr = dataset.corr()#to find the pairwise correlation of all columns in the dataframe
-    fig, ax = plt.subplots()
-    sb.heatmap(corr,cmap="Blues", ax=ax) #Plot rectangular data as a color-encoded matrix.
-    st.write(fig)
-    
-    
+    st.write("DATA PRE-PROCESSING")   
     st.subheader("Labels distribution")
     st.bar_chart(dataset["Label"].value_counts())
     
