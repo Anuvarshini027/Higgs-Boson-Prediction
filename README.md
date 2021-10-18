@@ -21,4 +21,18 @@ To run the app in anaconda prompt, go to the location where the higgs_boson_DL.p
 ```
 streamlit run higgs_boson_DL.py
 ```
-## Aproach:
+## Step-by-Step Approach:
+
+Data Analysis<br>
+Data Cleaning<br>
+Data Pre-Processing<br>
+   =>Feature Selection (Using Univariate Feature Selection Method)<br>
+Data Splitting(training and testing data)<br>
+Performing data on various DEEP LEARNING Models<br>
+
+## DEEP LEARNING MODELS USED IN THIS PROJECT:
+
+1) Basic ANN
+2) Recurrent Neural Network
+3) LSTM(Long Short Term Memory)
+4) GRU+LSTM(A Hybrid Model)
