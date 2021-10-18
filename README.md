@@ -1,8 +1,7 @@
 # Higgs-Boson-Prediction
 
 This app has been deployed on streamlit. To view the app check the link below
-
-https://share.streamlit.io/deepthisudharsan/higgs-boson-dl-project1-tmlc/main/Higgs-Boson-Streamlit/higgs_boson_DL.py
+https://share.streamlit.io/anuvarshini027/higgs-boson-prediction/main/App_Higgs_Boson.py
 
 ## Streamlit web app implementation of the project. 
 
