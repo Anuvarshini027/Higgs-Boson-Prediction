@@ -1,9 +1,9 @@
 tensorflow-cpu 
-sklearn
+sklearn==0.23.1
 urllib3==1.26.6
-pandas 
-numpy
+pandas==1.0.5
+numpy==1.19.5
 gunicorn
-matplotlib
-streamlit
-seaborn
+matplotlib==3.2.2
+streamlit== 1.0.0
+seaborn==0.10.1
