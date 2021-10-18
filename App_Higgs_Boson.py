@@ -3,6 +3,7 @@ from numpy import set_printoptions
 from keras.utils import np_utils
 import pandas as pd
 import streamlit as st
+from PIL import Image
 import warnings
 warnings.filterwarnings("ignore") 
 
@@ -32,6 +33,18 @@ import tensorflow
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 
+st.title('HIGGS BOSON - DEEP LEARNING PROJECT')
+st.subheader('Upload the Higgs Boson dataset: (.csv)')
+# creating a side bar 
+st.sidebar.info("Created By : Anuvarshini S P")
+# Adding an image to the side bar 
+st.sidebar.subheader("Contact Information : ")
+
+col1, mid, col2 = st.sidebar.beta_columns([1,1,20])
+with col1:
+	st.sidebar.subheader("Github : ")
+with col2:
+	st.sidebar.markdown("[![Github](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJGtP-Pq0P67Ptyv3tB7Zn2ZYPIT-lPGI7AA&usqp=CAU)](https://github.com/Anuvarshini027)")
 # if the user chooses to upload the data
 file = st.file_uploader('Dataset')
 class Models:
@@ -170,7 +183,7 @@ if file is not None:
     
     #1. using SelectKBest selecting top 15 features
     b=featureScores.nlargest(f,'Score')
-    st.write("Top 15 Selected Features based on their scores")
+    st.write("Top ",str(f)," Selected Features based on their scores")
     st.write(b)
     index=(b.index).tolist()
     
@@ -229,7 +242,8 @@ if file is not None:
 
     if(st.button("FINISH")):
         st.info("Thank You for your Patience!")
-        st.balloons()
+        image = Image.open('https://www.wishesmsg.com/wp-content/uploads/Have-a-Great-Day-Messages.jpg',width=None)
+        st.image(image,use_column_width=True)
 
 else:
     st.warning("No file has been chosen yet")
