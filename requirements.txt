@@ -1,9 +1,8 @@
-tensorflow-cpu 
-sklearn==0.23.1
-urllib3==1.26.6
-pandas==1.0.5
+matplotlib==3.1.1
 numpy==1.19.5
-gunicorn
-matplotlib==3.2.2
-streamlit== 1.0.0
-seaborn==0.10.1
+tensorflow>=2.4.2
+scikit-learn==0.21.3
+pandas==0.25.1
+autoviz==0.0.83
+dabl==0.2.2
+seaborn==0.9.0
