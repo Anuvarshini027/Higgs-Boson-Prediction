@@ -1,4 +1,3 @@
-
 import numpy as np
 from keras.utils import np_utils
 import pandas as pd
@@ -17,7 +16,6 @@ from collections import Counter
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM,Dropout,SimpleRNN
 from tensorflow.keras.layers import Conv1D,MaxPooling1D,BatchNormalization
-from sklearn import svm
 
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
@@ -26,115 +24,95 @@ from sklearn.metrics import classification_report
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-#Upload Data
+
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
+
+# if the user chooses to upload the data
 file = st.file_uploader('Dataset')
-class DL_models:
-    
-    def __init__(self,X_train,y_train,X_test,y_test):
-        self.X_train = X_train
-        self.y_train = y_train
-        self.X_test = X_test
-        self.y_test = y_test
+class Models:
+
+    def __init__(self,trainx,trainy,testx,testy):
+        self.trainx = trainx
+        self.trainy = trainy
+        self.testx = testx
+        self.testy = testy
 
 
     def simple_ANN(self):
         st.subheader("SIMPLE ARTIFICIAL NEURAL NETWORK")
-        st.spinner(text='In progress...')
-        model = Sequential()
-        model.add(Dense(units = 128, activation = 'relu'))
-        model.add(Dropout(0.2))
-        model.add(Dense(units = 64))
-        model.add(Dropout(0.2))
-        model.add(Dense(units = 1))
-        model.compile(optimizer = 'adam', loss = 'mean_squared_error',metrics = ["acc"])
-        model.fit(self.X_train,self.y_train, batch_size = 32, epochs = 10)
-        y_pred = model.predict(self.X_test)
-        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
-        plt.plot(self.y_test, y_pred)
-        st.write(plt.show())
+            
+        with st.spinner('Loading...'):
+            model = Sequential()
+            model.add(Dense(30, input_dim=self.trainx.shape[1], activation='relu'))
+            model.add(Dense(2, activation='sigmoid'))
+            opt = tensorflow.keras.optimizers.Adam(learning_rate=0.01)
+            model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         
-        st.write("CONFUSION MATRIX : ") 
-        st.write(confusion_matrix(self.y_test, y_pred))
-        st.write("CLASSIFICATION REPORT : ")
-        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
-
-
+            st.subheader('Number of epochs as per user(s) choice:)')
+            st.text('Default is set to 50')
+            f = st.number_input('',step = 10,min_value=50, value = 50)
+            model.fit(self.trainx,self.trainy,validation_data =(self.testx,self.testy), epochs=f)
+            st.success("Done!")
+        st.subheader("Summary of the Model")
+        st.write(model.summary())
+        # evaluate the model
+        scores = model.evaluate(self.trainx, self.trainy, verbose=0)
+        st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+        
 
     def RNN(self):
         st.subheader("RECURRENT NEURAL NETWORK")
-        st.spinner(text='In progress...')
-        Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
-        # Reshape the data
-        Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
+         
+        trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
+        testx_dl=self.testx.reshape(self.testx.shape+(1,))
+        
         model = Sequential()
-        model.add(SimpleRNN(units=4, input_shape=(Xtrain.shape[1], Xtrain.shape[2])))
-        model.add(Dense(1))
-        model.compile(loss='mean_squared_error', optimizer='adam',metrics = ["acc"])
-        model.fit(Xtrain, self.y_train, epochs=10, batch_size=32)
-        # predicting the opening prices
-        y_pred = model.predict(Xtest)
-        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
-        plt.plot(self.y_test, y_pred)
-        st.write(plt.show())
-        st.write("CONFUSION MATRIX : ")
-        st.write(confusion_matrix(self.y_test, y_pred))
-        st.write("CLASSIFICATION REPORT : ")
-        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
+        model.add(SimpleRNN(units=100, input_shape= (trainx_dl.shape[1], 1)))
+        model.add(Dense(2))
+        model.compile(loss='mean_squared_error', optimizer='adam',metrics = ["accuracy"])
         
-    def SVM(self):
-        st.subheader("Support Vector Machine")
-        st.spinner(text='In progress...')
-        model=svm.SVC(kernel='linear')
-        model.fit(self.X_train, self.y_train)
+        st.subheader('Number of epochs as per user(s) choice:)')
+        st.text('Default is set to 10')
+        f = st.number_input('',step = 1,min_value=10, value = 10)
+        model.fit(trainx_dl, self.trainy, epochs=f,validation_data=(testx_dl,self.testy),verbose=1)
         
-        y_pred = model.predict(self.X_test)
-        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
-        plt.plot(self.y_test, y_pred)
-        st.write(plt.show())
+        st.subheader("Summary of the Model")
+        st.write(model.summary())
+        # evaluate the model
+        scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
+        st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
         
-        st.write("CONFUSION MATRIX : ") 
-        st.write(confusion_matrix(self.y_test, y_pred))
-        st.write("CLASSIFICATION REPORT : ")
-        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
-        
-        
-    def dl_LSTM(self):
+    def LSTM(self):
         st.subheader("LSTM(Long Short Term Memory)")
-        st.spinner(text='In progress...')
-        Xtrain = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
-        # Reshape the data
-        Xtest = np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
+         
+        trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
+        testx_dl=self.testx.reshape(self.testx.shape+(1,))
         
         model = Sequential()
-        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (Xtrain.shape[1], 1), activation = 'tanh'))
+        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (trainx_dl.shape[1], 1), activation = 'tanh'))
         model.add(LSTM(units = 50, activation = 'tanh'))
         model.add(Dense(units = 2,activation='softmax'))
         model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
-        model.fit(Xtrain,self.y_train, batch_size = 32, epochs = 2,verbose=1)
         
-        y_pred = model.predict(Xtest)
-        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
+        st.subheader('Number of epochs as per user(s) choice:)')
+        st.text('Default is set to 10')
+        f = st.number_input('',step = 1,min_value=10, value = 10)
+        model.fit(trainx_dl,self.trainy,epochs=f,validation_data=(testx_dl,self.testy),verbose=1)
+        st.write(model.summary())
         
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
-        plt.plot(self.y_test, y_pred)
-        plt.show()
-        
-        st.write("CONFUSION MATRIX : ") 
-        st.write(confusion_matrix(self.y_test, y_pred))
-        
-        st.write("CLASSIFICATION REPORT : ")
-        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
-        
+        st.subheader("Summary of the Model")
+        st.write(model.summary())
+        # evaluate the model
+        scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
+        st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
         
     def gru_lstm(self):
         st.subheader("Hybrid Model")
-        st.spinner(text='In progress...')
-        trainx = np.reshape(self.X_train, (self.X_train.shape[0], self.X_train.shape[1], 1))
-        testx =  np.reshape(self.X_test, (self.X_test.shape[0], self.X_test.shape[1], 1 ))
-       
+         
+        trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
+        testx_dl=self.testx.reshape(self.testx.shape+(1,))
+        
         model = Sequential()
         model.add(Conv1D(filters=32, kernel_size=9, padding='same', activation='relu'))
         model.add(MaxPooling1D(pool_size=2))
@@ -143,23 +121,20 @@ class DL_models:
         model.add(LSTM(16, dropout=0.2, recurrent_dropout=0.2,return_sequences=True))
         model.add(LSTM(8, dropout=0.2, recurrent_dropout=0.2))
         model.add(Dense(2, activation='softmax'))
-
         model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-        model.fit(trainx,self.y_train,epochs=2,validation_data=(testx, self.y_test),verbose=1)
         
-        y_pred = model.predict(testx)
-        y_pred = [0 if y_pred[i] <=0.5 else 1 for i in range(len(y_pred))]
+        st.subheader('Number of epochs as per user(s) choice:)')
+        st.text('Default is set to 10')
+        f = st.number_input('',step = 1,min_value=10, value = 10)
+        model.fit(trainx_dl,self.trainy,epochs=f,validation_data=(testx_dl, self.testy),verbose=1)
+        st.write(model.summary())
         
-        st.write("ACCURACY : ",accuracy_score(self.y_test, y_pred)*100,"%")
-        plt.plot(self.y_test, y_pred)
-        st.write(plt.show())
-        
-        st.write("CONFUSION MATRIX : ") 
-        st.write(confusion_matrix(self.y_test, y_pred))
-        
-        st.write("CLASSIFICATION REPORT : ")
-        st.write(classification_report(self.y_test, y_pred, target_names = ["b","s"], output_dict=True))
-        
+        st.subheader("Summary of the Model")
+        st.write(model.summary())
+        # evaluate the model
+        scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
+        st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+       
         
 
 if file is not None:
@@ -173,104 +148,96 @@ if file is not None:
     dataset.index=dataset.EventId
     dataset=dataset.drop(columns=['EventId'])
 
-    st.subheader("DATA PRE-PROCESSING")
-    st.write("Number of features",dataset.shape[1])
-    st.subheader("Features List")
-    st.write(dataset.columns)
-    st.write("Label is the column to be predicted")
-    #st.subheader("Correlation plot of the features")
-    #corr = dataset.corr()#to find the pairwise correlation of all columns in the dataframe
-    #fig, ax = plt.subplots()
-    #sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
-    #st.write(fig)
+    st.write("DATA PRE-PROCESSING")
+    st.subheader("Correlation plot of the features")
+    corr = dataset.corr()#to find the pairwise correlation of all columns in the dataframe
+    fig, ax = plt.subplots()
+    sb.heatmap(corr,cmap="Blues", ax=ax) #Plot rectangular data as a color-encoded matrix.
+    st.write(fig)
     
     
     st.subheader("Labels distribution")
     st.bar_chart(dataset["Label"].value_counts())
     
-    #st.subheader("Finding no. of null values per column in the dataset")
-    #st.write(Counter(dataset.isna()))
+    st.subheader("Features")
+    st.write(dataset.columns)
     
     st.subheader("Statistical information about the datset")
     st.write(dataset.describe())
     
-    data = dataset.iloc[:,:-1] # Extracting features #exclusing the label and the weight column
-    imp_mean = SimpleImputer(missing_values = -999.0, strategy='mean') 
-    # the placeholder for the missing values. All occurrences of missing_values will be imputed.
-    #If “mean”, then replace missing values using the mean along each column. Can only be used with numeric data.
+    st.write("We are dropping weight column as it contains almost similar properties as the label column. So if we train the model using weight column it will give us 100 percent score.")
+    st.subheader("Excluding the feature weight")
     
-    X = imp_mean.fit_transform(data)
-    y = dataset.iloc[:,-1] # extracting the labels
-    train_label = y.tolist()
-    class_names = list(set(train_label))
-    le = LabelEncoder()  
-    y = le.fit_transform(y) # Encoding categorical data to numeric data
+    Xt1 = dataset.iloc[:,:-2] 
+    st.write(Xt1.head())
+    yt = dataset.iloc[:,-1] # extracting the label 
+    Xt=np.asarray(Xt1)
+    Y=pd.get_dummies(yt) #one hot encoding
+    Y=np.asarray(Y)
+    
+    #Feature selection
+    st.subheader("Feature selection")
+    m = LogisticRegression()
+    st.subheader('Number of features to be selected as per user(s) choice:)')
+    st.text('Default is set to 15')
+    f = st.number_input('',step = 5,min_value=10, value = 15)
+    rfe = RFE(m, f) #extracts 15 best features from the dataset
+    fit = rfe.fit(Xt, yt)
+    ans=fit.support_
+    index=[]
+    for i in range(len(ans)):
+        if ans[i] == True:
+            index.append(i)
+    
+    a=[Xt1.iloc[:,i] for i in index]
+    a=pd.DataFrame(a)
+    a=a.T
+    st.subheader("After extracting the features")
+    st.write(a.head())
+    st.write(a.columns)
+    st.write(a.shape)
+    
+    st.subheader("Correlation plot of the features")
+    corr = a.corr()#to find the pairwise correlation of all columns in the dataframe
+    fig, ax = plt.subplots()
+    sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
+    st.write(fig)
     
     st.success("Data cleaned!")
-    st.subheader('Test size split of users choice:')
+    st.subheader('Test size split of users choice:)')
     st.text('Default is set to 20%')
     
     k = st.number_input('',step = 5,min_value=10, value = 20)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = k * 0.01, random_state = 0)
+    trainx,testx,trainy,testy = train_test_split(X, y, test_size = k * 0.01, random_state = 0)
     st.write("Data is being split into testing and training data!")
-    # Splitting the data into 20% test and 80% training data
-    # Outlier detection and removal using Isolation Forest
-    iso = IsolationForest(contamination='auto')
-    train_iso = iso.fit_predict(X_train)
-    test_iso = iso.fit_predict(X_test)
-    st.success("Dataset is split into Training and Testing data ")
-    st.write(Counter(train_iso)[-1],"outliers out of ",X_train.shape[0],"data points are removed which makes it easier for prediction")
-    st.write(Counter(test_iso)[-1],"outliers out of ",X_test.shape[0],"data points are removed which makes it easier for prediction")
-    # select all rows that are not outliers
-    mask_train = train_iso != -1 #-1 refers to outliers while 1 refers to Inliers
-    mask_test = test_iso != -1
-    X_train, y_train = X_train[mask_train, :], y_train[mask_train]
-    X_test, y_test = X_test[mask_test, :], y_test[mask_test]
-    st.success("Outliers removed successfully!")
-    std_sc = StandardScaler()
-    X_train = std_sc.fit_transform(X_train) # Scaling the training data
-    X_test = std_sc.transform(X_test) # Scaling the testing data
+    # Splitting the data into 20% test and 80% training data   
 
-    dl = DL_models(X_train,y_train,X_test,y_test)
+    algo = Models(trainx,trainy,testx,testy)
     st.subheader('Choose the Deep Learning model :')
-    options = st.multiselect("Select :",["Simple ANN","RNN","SVM","LSTM","GRU_LSTM","All"])
+    options = st.multiselect("Select :",["Simple ANN","RNN","LSTM","GRU_LSTM(HYBRID)","All"])
     # "Click to select",
     if(st.button("START")):
 
-        if "Simple ANN" in  options:
-            dl.simple_ANN()
+        if "Simple ANN" in options:
+            algo.simple_ANN()
             
-        if "RNN" in  options:
-            dl.RNN()
+        if "RNN" in options:
+            algo.RNN()
             
-        if "SVM" in  options:
-            dl.SVM()
-            
-        if "LSTM" in  options:
-            dl.dl_LSTM()
-        
-        if "GRU_LSTM" in options:
-            dl.gru_lstm()
-        
+        if "LSTM" in options:
+            algo.dl_LSTM()
 
-        if "All" in  options:
+        if "All" in options:
 
-            dl.basic_ANN()
-            dl.RNN()
-            dl.SVM()
-            dl.dl_LSTM()
-            dl.gru_lstm()
+            algo.basic_ANN()
+            algo.RNN()
+            algo.dl_LSTM()
+            algo.gru_lstm()
             
 
     if(st.button("FINISH")):
-        st.info("THANK YOU FOR YOUR PATIENCE. WE ARE DONE. HOPE YOU ARE SATISFIED")
+        st.info("Thank You for your Patience!")
         st.balloons()
 
 else:
     st.warning("No file has been chosen yet")
-
-
-
-
-
-
