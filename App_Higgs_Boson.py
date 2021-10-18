@@ -54,7 +54,7 @@ class Models:
             model.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
        
             model.fit(self.trainx,self.trainy,validation_data =(self.testx,self.testy), epochs=80)
-            st.success("Done!")
+            st.success("Done:)")
         
         # evaluate the model
         scores = model.evaluate(self.trainx, self.trainy, verbose=0)
@@ -63,35 +63,35 @@ class Models:
 
     def RNN(self):
         st.subheader("RECURRENT NEURAL NETWORK")
-         
-        trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
-        testx_dl=self.testx.reshape(self.testx.shape+(1,))
+        with st.spinner('Loading...'):  
+            trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
+            testx_dl=self.testx.reshape(self.testx.shape+(1,))
         
-        model = Sequential()
-        model.add(SimpleRNN(units=100, input_shape= (trainx_dl.shape[1], 1)))
-        model.add(Dense(2))
-        model.compile(loss='mean_squared_error', optimizer='adam',metrics = ["accuracy"])
+            model = Sequential()
+            model.add(SimpleRNN(units=100, input_shape= (trainx_dl.shape[1], 1)))
+            model.add(Dense(2))
+            model.compile(loss='mean_squared_error', optimizer='adam',metrics = ["accuracy"])
         
-        model.fit(trainx_dl, self.trainy, epochs=10,validation_data=(testx_dl,self.testy),verbose=1)
-        
+            model.fit(trainx_dl, self.trainy, epochs=10,validation_data=(testx_dl,self.testy),verbose=1)
+            st.success("Done:)")
         # evaluate the model
         scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
         st.write("%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
         
     def LSTM(self):
         st.subheader("LSTM(Long Short Term Memory)")
-         
-        trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
-        testx_dl=self.testx.reshape(self.testx.shape+(1,))
+        with st.spinner('Loading...'):  
+            trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
+            testx_dl=self.testx.reshape(self.testx.shape+(1,))
         
-        model = Sequential()
-        model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (trainx_dl.shape[1], 1), activation = 'tanh'))
-        model.add(LSTM(units = 50, activation = 'tanh'))
-        model.add(Dense(units = 2,activation='softmax'))
-        model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+            model = Sequential()
+            model.add(LSTM(units = 50,dropout = 0.2, return_sequences = True, input_shape = (trainx_dl.shape[1], 1), activation = 'tanh'))
+            model.add(LSTM(units = 50, activation = 'tanh'))
+            model.add(Dense(units = 2,activation='softmax'))
+            model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
         
-        model.fit(trainx_dl,self.trainy,epochs=3,validation_data=(testx_dl,self.testy),verbose=1)
-        st.write(model.summary())
+            model.fit(trainx_dl,self.trainy,epochs=3,validation_data=(testx_dl,self.testy),verbose=1)
+            st.success("Done:)")
        
         # evaluate the model
         scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
@@ -99,22 +99,22 @@ class Models:
         
     def gru_lstm(self):
         st.subheader("Hybrid Model")
-         
-        trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
-        testx_dl=self.testx.reshape(self.testx.shape+(1,))
+        with st.spinner('Loading...'):  
+            trainx_dl=self.trainx.reshape(self.trainx.shape+(1,))
+            testx_dl=self.testx.reshape(self.testx.shape+(1,))
         
-        model = Sequential()
-        model.add(Conv1D(filters=32, kernel_size=9, padding='same', activation='relu'))
-        model.add(MaxPooling1D(pool_size=2))
-        model.add(Conv1D(filters=16, kernel_size=9, padding='same', activation='relu'))
-        model.add(MaxPooling1D(pool_size=2))
-        model.add(LSTM(16, dropout=0.2, recurrent_dropout=0.2,return_sequences=True))
-        model.add(LSTM(8, dropout=0.2, recurrent_dropout=0.2))
-        model.add(Dense(2, activation='softmax'))
-        model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+            model = Sequential()
+            model.add(Conv1D(filters=32, kernel_size=9, padding='same', activation='relu'))
+            model.add(MaxPooling1D(pool_size=2))
+            model.add(Conv1D(filters=16, kernel_size=9, padding='same', activation='relu'))
+            model.add(MaxPooling1D(pool_size=2))
+            model.add(LSTM(16, dropout=0.2, recurrent_dropout=0.2,return_sequences=True))
+            model.add(LSTM(8, dropout=0.2, recurrent_dropout=0.2))
+            model.add(Dense(2, activation='softmax'))
+            model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
        
-        model.fit(trainx_dl,self.trainy,epochs=10,validation_data=(testx_dl, self.testy),verbose=1)
-        st.write(model.summary())
+            model.fit(trainx_dl,self.trainy,epochs=10,validation_data=(testx_dl, self.testy),verbose=1)
+            st.success("Done:)")
         
         # evaluate the model
         scores = model.evaluate(trainx_dl, self.trainy, verbose=0)
@@ -160,7 +160,7 @@ if file is not None:
     st.text('Default is set to 15')
     f = st.number_input('',step = 5,min_value=10, value = 15)
     
-    bestfeature= SelectKBest(score_func=chi2,k=10)
+    bestfeature= SelectKBest(score_func=chi2,k=f)
     fit=(bestfeature.fit(Xt,yt))
     dfscores=pd.DataFrame(fit.scores_)
     dfcolumns=pd.DataFrame(dataset.columns)
@@ -169,7 +169,7 @@ if file is not None:
     st.write(featureScores)
     
     #1. using SelectKBest selecting top 15 features
-    b=featureScores.nlargest(15,'Score')
+    b=featureScores.nlargest(f,'Score')
     st.write("Top 15 Selected Features based on their scores")
     st.write(b)
     index=(b.index).tolist()
@@ -180,10 +180,9 @@ if file is not None:
     X=np.asarray(a)
     st.subheader("After extracting the features")
     st.write(a.head())
-    st.write(a.columns)
     st.write(a.shape)
     
-    st.subheader("Correlation plot of the features")
+    st.subheader("Correlation plot")
     corr = a.corr()#to find the pairwise correlation of all columns in the dataframe
     fig, ax = plt.subplots()
     sns.heatmap(corr,cmap="Greens", ax=ax) #Plot rectangular data as a color-encoded matrix.
@@ -222,7 +221,7 @@ if file is not None:
             
         if "All" in options:
 
-            algo.basic_ANN()
+            algo.simple_ANN()
             algo.RNN()
             algo.LSTM()
             algo.gru_lstm()
