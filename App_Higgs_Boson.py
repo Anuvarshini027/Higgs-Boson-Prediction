@@ -39,7 +39,7 @@ st.sidebar.info("Created By : Anuvarshini S P")
 # Adding an image to the side bar 
 st.sidebar.subheader("Contact Information : ")
 
-col1, mid, col2 = st.sidebar.beta_columns([1,1,20])
+col1, mid, col2 = st.sidebar.columns([1,1,20])
 with col1:
 	st.sidebar.subheader("Github : ")
 with col2:
