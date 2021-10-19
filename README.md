@@ -19,7 +19,7 @@ All the package requirements have been mentioned in the requirements.txt file.
 To run the app in anaconda prompt, go to the location where the App_Higgs_Boson.py file is using the cd command and then run the following line:
 
 ```
-streamlit run higgs_boson_DL.py
+streamlit run App_Higgs_Boson.py
 ```
 ## Step-by-Step Approach:
 
